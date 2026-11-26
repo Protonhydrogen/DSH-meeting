@@ -45,7 +45,7 @@ Whisper 和 Qwen 可以在同场会议切换。它们共用录音、时间轴和
 dsh plugin --profile desktop add https://github.com/Protonhydrogen/DSH-meeting
 ```
 
-默认使用 `%LOCALAPPDATA%\DSH-meeting\venv\Scripts\python.exe`，与快速开始中的环境一致。使用自定义环境时，在启动宿主前设置 `DSH_MEETINGS_PYTHON` 为 Python 的绝对路径，设置 `DSH_MEETINGS_CONFIG` 为自定义 YAML 的绝对路径。可通过 `DSH_MEETINGS_PROJECT_ROOT` 指向已有源码副本，通过 `SC_INSTALL_ROOT` 指定外部状态目录。这些变量需要传入启动宿主的进程环境。Cordis 插件配置里的同名路径字段优先于环境变量。
+默认使用 `%LOCALAPPDATA%\DSH-meeting\venv\Scripts\python.exe`，与快速开始中的环境一致。首次启用时会在外部状态目录生成 `config/meeting.yaml`，默认会议数据保存在该目录下的 `meetings` 文件夹。已有配置可通过下述变量指定。使用自定义环境时，在启动宿主前设置 `DSH_MEETINGS_PYTHON` 为 Python 的绝对路径，设置 `DSH_MEETINGS_CONFIG` 为自定义 YAML 的绝对路径。可通过 `DSH_MEETINGS_PROJECT_ROOT` 指向已有源码副本，通过 `SC_INSTALL_ROOT` 指定外部状态目录。这些变量需要传入启动宿主的进程环境。Cordis 插件配置里的同名路径字段优先于环境变量。
 
 安装完成后重启宿主并打开 Meetings。从旧安装器迁移时，先用旧安装器的 `uninstall` 注销原注册，再进行上述安装，以免重复注册。原环境、模型和会议数据可继续使用。
 
