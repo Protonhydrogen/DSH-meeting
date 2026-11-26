@@ -1,0 +1,46 @@
+{
+  "name": "dsh-meetings",
+  "version": "0.4.4",
+  "description": "Local meeting recording, Whisper and Qwen transcription, and meeting notes in DeepSeek Harness.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dsh-meetings-plugin/lib/market.js",
+  "exports": {
+    ".": "./dsh-meetings-plugin/lib/market.js",
+    "./client": "./dsh-meetings-plugin/lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "cordis.patch.yml",
+    "dsh-meetings-plugin/lib",
+    "src/scientific_conference",
+    "config/example.yaml",
+    "requirements.txt",
+    "scripts/fetch_models.py",
+    "scripts/qwen_asr_service.py",
+    "docs/setup.md",
+    "docs/images",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Protonhydrogen/DSH-meeting.git"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-layout",
+        "@deepseek-ai/dsh-client-ui-sidebar",
+        "@deepseek-ai/dsh-api-session-controller",
+        "@deepseek-ai/dsh-client-ui-session",
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-chat"
+      ]
+    }
+  }
+}

@@ -37,6 +37,21 @@ Whisper 和 Qwen 可以在同场会议切换。它们共用录音、时间轴和
 
 ## DeepSeek Harness 集成
 
+### 插件市场与命令行安装
+
+先按 README 配置外置 Python 环境、安装 `requirements.txt` 并下载 Whisper 模型。插件包包含会议后端源码，模型与 Python 环境需要单独准备。支持原生 Meetings 扩展接口的 Windows DeepSeek Harness 宿主可用以下命令从仓库安装。
+
+```powershell
+dsh plugin --profile desktop add https://github.com/Protonhydrogen/DSH-meeting
+```
+
+默认使用 `%LOCALAPPDATA%\DSH-meeting\venv\Scripts\python.exe`，与快速开始中的环境一致。使用自定义环境时，在启动宿主前设置 `DSH_MEETINGS_PYTHON` 为 Python 的绝对路径，设置 `DSH_MEETINGS_CONFIG` 为自定义 YAML 的绝对路径。可通过 `DSH_MEETINGS_PROJECT_ROOT` 指向已有源码副本，通过 `SC_INSTALL_ROOT` 指定外部状态目录。这些变量需要传入启动宿主的进程环境。Cordis 插件配置里的同名路径字段优先于环境变量。
+
+安装完成后重启宿主并打开 Meetings。从旧安装器迁移时，先用旧安装器的 `uninstall` 注销原注册，再进行上述安装，以免重复注册。原环境、模型和会议数据可继续使用。
+
+### 手动安装器
+
+
 使用支持原生 Meetings 扩展接口的 DeepSeek Harness 桌面版。此集成使用当前宿主的工具和会话 SDK。建议从 Windows 终端运行安装器，安装后重启宿主。
 
 ```powershell
