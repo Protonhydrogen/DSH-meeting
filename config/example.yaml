@@ -1,0 +1,111 @@
+# 学术会议实时录音与科研纪要 —— 配置样例
+#
+# 复制为 config/local.yaml 后修改；local.yaml 优先于本文件被加载。
+# 可用 SC_INSTALL_ROOT 指定模型和缓存的外部目录。
+#
+# 环境变量覆盖：SC_<SECTION>__<KEY>，例如
+#   set SC_ASR__DEVICE=cpu
+#   set SC_PROJECT__OUTPUT_ROOT=C:\example\meetings
+
+project:
+  # 会议产物根目录。可设为本机可写目录。请根据会议保密要求设置同步策略。
+  output_root: ./meetings
+  keep_audio_days: 0      # 0 = 永不自动删除
+  locale: zh-CN
+
+audio:
+  device_id: default      # default | 设备索引(如 9) | 名称片段(如 "Realtek")
+  sample_rate: 0          # 0 = 使用设备默认采样率（推荐；转写支路会自动重采样到 16k）
+  channels: 1
+  chunk_seconds: 10       # 每多少秒落一个音频块
+  queue_max_chunks: 900   # ASR 队列上限；满时记录丢弃并计入状态，不静默丢失
+  save_source_format: true
+  reconnect_attempts: 20
+  reconnect_delay_s: 2.0
+
+asr:
+  backend: faster_whisper        # faster_whisper（默认）| qwen3_asr（本地流式）| azure | mock
+  model: small                   # tiny/base/small/medium/large-v3/turbo
+  models_dir: ""                 # 空 = <install_root>/models/scientific_conference
+  device: auto                   # auto | cuda | cpu
+  compute_type: auto             # auto | int8 | float16 | float32
+  language_hints: [zh, en]
+  beam_size: 5
+  # temperature 是第一次解码的温度；真正的重复循环保护来自下面的回退阶梯：
+  # faster-whisper 只有在收到"温度列表"时才会在解码质量不合格时重试。
+  temperature: 0.0
+  temperature_fallback: true     # false = 单温度（旧行为，重复循环不会被重试）
+  compression_ratio_threshold: 2.4   # 压缩比超过此值判为重复，触发高一档温度重试
+  log_prob_threshold: -1.0       # 平均对数概率低于此值同样触发重试
+  no_speech_threshold: 0.6       # 静音幻觉阈值（配合 log_prob 一起判断）
+  word_timestamps: true
+  qwen:
+    model: Qwen/Qwen3-ASR-0.6B
+    port: 8787
+    language: inherit             # inherit | auto | zh | en
+    chunk_seconds: 2.0
+    max_utterance_seconds: 20.0
+    timeout_seconds: 15.0
+  # 简体中文初始提示可以显著减少繁体输出，并把领域术语提前"预热"给模型：
+  initial_prompt: "以下是简体中文的学术会议发言记录，涉及研究方法、样本量、统计结果与讨论。"
+  # 增量窗口参数
+  utterance_silence_ms: 700      # 句段稳定所需的静音
+  max_window_ms: 20000           # 单个转写窗口上限，超过则在最低能量处切分并保留重叠
+  min_segment_ms: 300
+  max_asr_lag_ms: 30000
+  azure:
+    region: ""
+    key_env: AZURE_SPEECH_KEY    # 密钥只从环境变量/系统凭据读取，不写入本文件
+    language: zh-CN
+    endpoint: ""
+
+vad:
+  backend: silero         # silero（默认）| energy（兜底）| none
+  model_path: ""          # 空 = <models_dir>/silero_vad.onnx
+  threshold: 0.5
+  min_speech_ms: 250
+  min_silence_ms: 400
+  pad_ms: 200
+  energy_threshold: 0.012
+
+segmenter:
+  turn_silence_ms: 4000          # 判定轮次结束的静音
+  grace_ms: 2500                 # 宽限窗口：期间恢复说话则合并回同一轮
+  short_backchannel_ms: 900      # 短插话不切断报告
+  provisional_interval_ms: 90000 # 长报告每 90s 生成 provisional 增量笔记
+  talk_close_silence_ms: 20000   # 判定整场报告结束的静音
+
+notes:
+  skill_path: ""          # 空 = <project>/skills/scientific-conference/SKILL.md
+  language: zh
+  keep_english_terms: true
+  default_mode: turn
+
+runner:
+  # offline_extractive = 无模型、离线、确定性抽取（默认，可离线跑通全链路）
+  # cli                = 调用本机 agent CLI（claude / codex / dsh ...），支持关掉桌面窗口长期运行
+  # openai_compatible  = 任意 /chat/completions 端点（需 privacy.allow_cloud_notes: true）
+  agent: offline_extractive
+  poll_wait_ms: 5000
+  max_attempts: 4
+  backoff_base_s: 5
+  lease_seconds: 600
+  max_events_per_cycle: 20
+  consumer_id: local-runner
+  cli:
+    # 示例（把 <...> 换成实际命令）；prompt_via: stdin 时提示词写标准输入
+    command: []
+    timeout_s: 300
+    prompt_via: stdin
+  openai:
+    base_url: ""
+    model: ""
+    api_key_env: OPENAI_API_KEY
+    timeout_s: 180
+    temperature: 0.2
+
+privacy:
+  upload_audio: false          # true 才允许 asr.backend=azure 上传音频
+  allow_cloud_notes: false     # true 才允许把转写发往远端模型生成纪要
+  bind_host: 127.0.0.1
+  require_consent: true        # true 时 conference.start 必须显式 --consent

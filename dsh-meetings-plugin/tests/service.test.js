@@ -1,0 +1,7 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {createBackend,validOrigin} from '../lib/service.js';
+test('only accepts plain loopback backend origins',()=>{for(const s of ['https://example.com','http://127.0.0.1:4/a','http://user@localhost:3','http://localhost.evil:3'])assert.equal(validOrigin(s),false);assert.equal(validOrigin('http://127.0.0.1:1234'),true);});
+test('bootstrap single flight and health reuse; failed health recovers',async()=>{let starts=0,healthy=true;const b=createBackend({projectRoot:'.',python:'python',configPath:'x'}, {run:async(cmd)=>{starts++;return {ok:true,origin:'http://127.0.0.1:1234',token:'private'}},health:async()=>{if(!healthy)throw Error('offline')}});await Promise.all([b.ensure(),b.ensure(),b.ensure()]);assert.equal(starts,1);await b.ensure();assert.equal(starts,1);healthy=false;await b.ensure();assert.equal(starts,2);});
+test('invalid or unhealthy bootstrap is never returned',async()=>{const b=createBackend({}, {run:async()=>({ok:true,origin:'http://evil:2',token:'x'}),health:async()=>{}});await assert.rejects(b.ensure(),/loopback/);});
+test('context rejects bad session IDs before spawning; save passes exact stdin',async()=>{let calls=[];const b=createBackend({}, {run:async(...a)=>{calls.push(a);return {ok:true}},health:async()=>{}});await assert.rejects(b.context('../x'),/session/);await b.context('meeting_1');await b.save('meeting_1',{markdown:'hello',review_epoch:3,run_id:'r1'});assert.equal(calls[0][0],'context');assert.equal(calls[1][1].markdown,'hello');});

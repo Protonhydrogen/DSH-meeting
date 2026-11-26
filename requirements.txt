@@ -1,0 +1,23 @@
+# DSH-meeting runtime. Use a Python virtual environment outside this checkout.
+
+numpy>=2.0
+sounddevice>=0.5          # WASAPI/PortAudio capture; bundles the PortAudio DLL
+faster-whisper>=1.1       # local CTranslate2 Whisper inference
+ctranslate2>=4.5
+onnxruntime>=1.18         # Silero VAD backend
+av>=12                    # audio decoding used by faster-whisper
+PyYAML>=6.0
+mcp>=1.2                  # Model Context Protocol adapter
+
+# Optional: GPU inference on NVIDIA cards (CUDA 12 runtime shipped as wheels).
+# CTranslate2 loads cublas64_12.dll and the cuDNN 9 libraries; the adapter
+# registers site-packages/nvidia/*/bin automatically.
+# nvidia-cuda-runtime-cu12
+# nvidia-cublas-cu12
+# nvidia-cudnn-cu12
+
+# Optional: cloud transcription adapter (not verified on this machine).
+# azure-cognitiveservices-speech
+
+# Development
+pytest>=8.0

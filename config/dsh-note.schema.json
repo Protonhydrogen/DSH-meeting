@@ -1,0 +1,93 @@
+{
+  "type": "object",
+  "required": [
+    "summary",
+    "findings"
+  ],
+  "properties": {
+    "summary": {
+      "type": "string"
+    },
+    "no_scientific_content": {
+      "type": "boolean"
+    },
+    "research_question": {
+      "type": "object"
+    },
+    "methods": {
+      "type": "object"
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "claim"
+        ],
+        "properties": {
+          "claim": {
+            "type": "string"
+          },
+          "value": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "evidence": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source_segment_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "claim_type": {
+            "type": "string",
+            "enum": [
+              "causal_interpretation",
+              "data_supported",
+              "hypothesis",
+              "organizer_note",
+              "reported_claim"
+            ]
+          },
+          "uncertainty": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "novelty": {
+      "type": "array"
+    },
+    "limitations": {
+      "type": "array"
+    },
+    "reproducibility": {
+      "type": "object"
+    },
+    "qa": {
+      "type": "array"
+    },
+    "action_items": {
+      "type": "array"
+    },
+    "uncertainties": {
+      "type": "array"
+    },
+    "terminology": {
+      "type": "array"
+    },
+    "evidence_index": {
+      "type": "array"
+    }
+  }
+}

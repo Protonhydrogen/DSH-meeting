@@ -1,0 +1,25 @@
+# Private recordings, local credentials, deployment and runtime state
+/meetings/
+/output/
+/tmp/
+/backups/
+/config/local.yaml
+/config/*.local.*
+/config/speaker-glossary.local.json
+.env
+.env.*
+*.dpapi
+*.sqlite
+*.sqlite3*
+*.wav
+*.flac
+*.mp3
+*.safetensors
+*.onnx
+*.log
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+node_modules/
+*.egg-info/
